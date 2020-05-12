@@ -5,15 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import {
-  percentage,
-  SCREEN_HEIGHT,
-  SCREEN_WIDTH,
-  numberSize,
-  imgWidth,
-  ImgContainerHeight,
-  Fonts,
-} from '../../Variables';
+import {imgWidth, ImgContainerHeight, Fonts} from '../../Variables';
 import Number from './Number';
 
 const Details = props => {
@@ -21,7 +13,6 @@ const Details = props => {
     <LinearGradient
       style={{
         flex: 1,
-        display: 'none'
       }}
       colors={['#fff', '#ffffff', '#fff', '#f9e4da']}>
       <View
@@ -39,7 +30,7 @@ const Details = props => {
           }}
           resizeMode="contain"
         />
-        <View
+        {/* <View
           style={{
             height: 100,
             width: 200,
@@ -53,7 +44,7 @@ const Details = props => {
               fontSize: Fonts / 1.2,
             }}
           />
-        </View>
+        </View> */}
       </View>
       <Number />
     </LinearGradient>
@@ -61,5 +52,10 @@ const Details = props => {
 };
 
 Details.propTypes = {};
+Details.options = {
+  topBar: {
+    visible: false,
+  },
+};
 
 export default Details;

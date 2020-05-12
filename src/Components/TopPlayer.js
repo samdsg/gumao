@@ -1,13 +1,61 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  useCode,
+  cond,
+  eq,
+  set,
+  SpringUtils,
+} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import PropTypes from 'prop-types';
 import {percentage, SCREEN_HEIGHT, numberSize} from '../../Variables';
+import {
+  withTimingTransition,
+  withSpring,
+  withSpringTransition,
+  delay,
+} from 'react-native-redash';
 
-const TopPlayer = props => {
+const TopPlayer = ({animeoneAnime, animeone}) => {
+  const topTrans = useRef(new Animated.Value(0));
+  const topTrans1 = useRef(new Animated.Value(0));
+
   const MiddleHeight = percentage(SCREEN_HEIGHT, 70);
   const boxesHeight = percentage(SCREEN_HEIGHT, 45);
+
+  const scaleLogo = interpolate(animeoneAnime, {
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  const sty1Anime = withSpringTransition(topTrans.current, {
+    ...SpringUtils.makeDefaultConfig(),
+    overshootClamping: true,
+    damping: new Animated.Value(20),
+  });
+  const sty2Anime = withSpringTransition(topTrans1.current, {
+    ...SpringUtils.makeDefaultConfig(),
+    overshootClamping: true,
+    damping: new Animated.Value(20),
+  });
+
+  const sTY2 = interpolate(sty1Anime, {
+    inputRange: [0, 1],
+    outputRange: [120, 140],
+  });
+
+  const sTY3 = interpolate(sty2Anime, {
+    inputRange: [0, 1],
+    outputRange: [130, 160],
+  });
+
+  useCode(() => [
+    cond(eq(topTrans.current, 0), [delay(set(topTrans.current, 1), 300)]),
+    cond(eq(topTrans1.current, 0), [delay(set(topTrans1.current, 1), 400)]),
+  ]);
+
   return (
     <View
       style={{
@@ -21,11 +69,12 @@ const TopPlayer = props => {
           width: '100%',
           zIndex: 4,
         }}>
-        <View
+        <Animated.View
           style={{
             translateY: -10,
             justifyContent: 'center',
-            alignItems: 'center', 
+            alignItems: 'center',
+            transform: [{scale: scaleLogo}],
           }}>
           <Animated.Image
             style={{
@@ -35,7 +84,7 @@ const TopPlayer = props => {
             }}
             source={require('../images/angryb.png')}
           />
-        </View>
+        </Animated.View>
       </View>
       <View
         style={{
@@ -91,7 +140,6 @@ const TopPlayer = props => {
             </Text>
             <Text
               style={{
-                // fontSize: 45,
                 fontSize: numberSize / 2.5,
                 fontFamily: 'Segoe UI Bold',
                 color: '#3F455A',
@@ -123,33 +171,31 @@ const TopPlayer = props => {
           </View>
         </View>
       </View>
-      <View
+      <Animated.View
         style={{
           position: 'absolute',
           width: '92%',
           height: boxesHeight,
           backgroundColor: '#FDE2E3',
           borderRadius: 30,
-          translateY: 140,
           zIndex: 2,
+          transform: [{translateY: sTY2}],
         }}
       />
-      <View
+      <Animated.View
         style={{
           position: 'absolute',
           width: '82%',
           height: boxesHeight,
           backgroundColor: '#FBD6D5',
           borderRadius: 30,
-          translateY: 160,
+          transform: [{translateY: sTY3}],
         }}
       />
     </View>
   );
 };
-const styles = StyleSheet.create({
-  
-});
+const styles = StyleSheet.create({});
 
 TopPlayer.propTypes = {};
 

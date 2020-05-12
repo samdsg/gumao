@@ -1,25 +1,22 @@
 import React, {useState} from 'react';
-import {View, Text} from 'react-native';
 import {Form, Picker} from 'native-base';
-import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  percentage,
-  SCREEN_HEIGHT,
-  SplashTopHeight,
-  SCREEN_WIDTH,
-} from '../../Variables';
+import {percentage, SCREEN_HEIGHT, SCREEN_WIDTH} from '../../Variables';
+import {EventEmitter} from '../Helpers/events';
 
 const Selector = props => {
   const SelectorHeight = percentage(SCREEN_HEIGHT, 7);
   const SelectorWidth = percentage(SCREEN_WIDTH, 7);
   const [selected, setSelected] = useState(undefined);
+
   const onValueChange = value => {
     setSelected(value);
+    EventEmitter.dispatch('platform', value);
   };
+
   return (
     <LinearGradient
-      colors={['#F29758', '#F29758', '#F29758', '#F8D8C9']}
+      colors={['#202943', '#202943']}
       style={{
         width: 300,
         alignSelf: 'center',
@@ -41,9 +38,9 @@ const Selector = props => {
           selectedValue={selected}
           onValueChange={onValueChange}>
           <Picker.Item label="Platform" value="" />
-          <Picker.Item label="PSN" value="key0" />
-          <Picker.Item label="Xbox" value="key1" />
-          <Picker.Item label="Origin" value="key2" />
+          <Picker.Item label="PSN" value="psn" />
+          <Picker.Item label="XBOX" value="xbl" />
+          <Picker.Item label="ORIGIN" value="orgin" />
         </Picker>
       </Form>
     </LinearGradient>

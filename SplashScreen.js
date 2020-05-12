@@ -1,42 +1,114 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {StyleSheet} from 'react-native';
-import {Container, Content} from 'native-base';
+import {Container, Content, Root} from 'native-base';
+import {withSpringTransition} from 'react-native-redash';
+import {connect} from 'react-redux';
+import Animated, {
+  cond,
+  eq,
+  useCode,
+  SpringUtils,
+  set,
+} from 'react-native-reanimated';
+import {State} from 'react-native-gesture-handler';
+import {onGestureEvent} from 'react-native-redash';
 
 /* Components */
 import Title from './src/Components/Title';
 import TopPlayer from './src/Components/TopPlayer';
 import FooterIcons from './src/Components/FooterIcons';
 import ListScreen from './src/Components/ListScreen';
-import Details from './src/Components/Details';
 
-const SplashScreen = props => {
+import {getTopPlayers} from './src/store/actions/playerAction';
+
+const SplashScreen = ({getTopPlayers}) => {
+  getTopPlayers();
+  /* Image, Top */
+  const animeone = useRef(new Animated.Value(0));
+  const animeoneAnime = withSpringTransition(animeone.current, {
+    ...SpringUtils.makeDefaultConfig(),
+    overshootClamping: true,
+    damping: new Animated.Value(20),
+  });
+  useCode(() => [cond(eq(animeone.current, 0), set(animeone.current, 1))]);
+
+  const landingOpen = useRef(new Animated.Value(1));
+  const landingAnimation = withSpringTransition(landingOpen.current, {
+    ...SpringUtils.makeDefaultConfig(),
+    overshootClamping: true,
+    damping: new Animated.Value(10),
+  });
+
+  const listOpen = useRef(new Animated.Value(0));
+  const listOpenAnimation = withSpringTransition(listOpen.current, {
+    ...SpringUtils.makeDefaultConfig(),
+    overshootClamping: true,
+    damping: new Animated.Value(20),
+  });
+
+  const searchState = useRef(new Animated.Value(State.UNDETERMINED));
+  const searchHandler = onGestureEvent({state: searchState.current});
+
+  useCode(
+    () => [
+      cond(eq(searchState.current, State.END), [
+        cond(eq(landingOpen.current, 1), [set(landingOpen.current, 0)]),
+        cond(eq(listOpen.current, 0), [set(listOpen.current, 1)]),
+      ]),
+    ],
+    [searchState.current],
+  );
+
+  const backBtnState = useRef(new Animated.Value(State.UNDETERMINED));
+  const backBtnHandler = onGestureEvent({state: backBtnState.current});
+
+  useCode(
+    () => [
+      cond(eq(backBtnState.current, State.END), [
+        cond(eq(listOpen.current, 1), [
+          set(listOpen.current, 0),
+          set(landingOpen.current, 1),
+          set(backBtnState.current, State.UNDETERMINED),
+          set(searchState.current, State.UNDETERMINED),
+        ]),
+      ]),
+    ],
+    [backBtnState.current],
+  );
+
   return (
-    <Container style={{...styles.container}}>
-      <Details />
-      <LinearGradient
-        style={{
-          flex: 1,
-          display: 'none',
-        }}
-        colors={['#202943', '#7C4864', '#F5718F', '#F8D8C9']}>
-        <ListScreen />
-      </LinearGradient>
-
-      <LinearGradient
-        colors={['#202943', '#7C4864', '#F5718F', '#F8D8C9']}
-        style={{
-          ...styles.container,
-          paddingHorizontal: 20,
-          paddingVertical: 20,
-        }}>
+    <Root>
+      <Container style={{...styles.container}}>
         <Content>
-          <Title />
-          <TopPlayer />
-          <FooterIcons />
+          <Animated.View
+            style={{
+              ...styles.container,
+              opacity: landingAnimation,
+            }}>
+            <LinearGradient
+              style={{
+                ...styles.container,
+                paddingHorizontal: 20,
+                paddingVertical: 20,
+              }}
+              colors={['#202943', '#7C4864', '#F5718F', '#F8D8C9']}>
+              <Title
+                animeoneAnime={animeoneAnime}
+                gestureHandler={{...searchHandler}}
+              />
+              <TopPlayer animeoneAnime={animeoneAnime} animeone={animeone} />
+              <FooterIcons gestureHandler={{...searchHandler}} />
+            </LinearGradient>
+          </Animated.View>
         </Content>
-      </LinearGradient>
-    </Container>
+        <ListScreen
+          listOpenAnimation={listOpenAnimation}
+          gestureHandler={{...backBtnHandler}}
+          listOpen={listOpen}
+        />
+      </Container>
+    </Root>
   );
 };
 
@@ -62,4 +134,9 @@ SplashScreen.options = {
   },
 };
 
-export default SplashScreen;
+const mapStateToProps = state => ({});
+
+export default connect(
+  mapStateToProps,
+  {getTopPlayers},
+)(SplashScreen);
