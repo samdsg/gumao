@@ -5,17 +5,24 @@ import {
   GETERROR,
   CLEARERROR,
   CLEARPLAYER,
+  SEARCHING,
 } from '../actions/types';
 
 const initialState = {
   hights: null,
-  mysearches: {status: false},
+  mysearches: [],
   search: null,
   err: null,
+  searching: false,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case SEARCHING:
+      return {
+        ...state,
+        searching: action.payload,
+      };
     case GETHIGHESTNUMBERS:
       return {
         ...state,
@@ -27,7 +34,7 @@ export default (state = initialState, action) => {
     case SEARCHAPLAYER:
       return {
         ...state,
-        mysearches: {...action.payload, ...state.mysearches},
+        mysearches: [action.payload, ...state.mysearches],
       };
     case GETERROR:
       return {

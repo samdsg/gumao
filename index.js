@@ -1,18 +1,9 @@
-import React from 'react';
-import {Root} from 'native-base';
+import React, {} from 'react';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import {Navigation} from 'react-native-navigation';
 import {Provider} from 'react-redux';
 import SplashScreen from './SplashScreen';
 import DetailsScreen from './src/Components/Details';
-import {websiteUrl} from './src/Helpers/misc';
-import IO from 'socket.io-client';
-
-// const socket = IO(`${websiteUrl}`);
-// socket.on('news', data => {
-//   console.log(data);
-//   socket.emit('my other event', {my: 'data'});
-// });
 
 import store from './src/store';
 
@@ -23,25 +14,77 @@ Navigation.registerComponentWithRedux(
   store,
 );
 Navigation.registerComponentWithRedux(
-  'Splash',
+  'Home',
   () => gestureHandlerRootHOC(SplashScreen),
   Provider,
   store,
 );
 
-Navigation.events().registerAppLaunchedListener(() => {
+Navigation.events().registerAppLaunchedListener(async () => {
   Navigation.setRoot({
     root: {
-      stack: {
-        children: [
-          {
-            component: {
-              id: 'splash',
-              name: 'Splash',
-            },
-          },
-        ],
+      component: {
+        id: 'Home',
+        name: 'Home',
       },
     },
   });
+  // Navigation.setRoot({
+  //   root: {
+  //     bottomTabs: {
+  //       id: 'BOTTOM_TABS_LAYOUT',
+  //       children: [
+  //         {
+  //           stack: {
+  //             id: 'HOME_TAB',
+  //             children: [
+  //               {
+  //                 component: {
+  //                   name: 'Home',
+  //                 },
+  //               },
+  //             ],
+  //           },
+  //         },
+  //         // {
+  //         //   stack: {
+  //         //     id: 'DETAIL_TAB',
+  //         //     children: [
+  //         //       {
+  //         //         component: {
+  //         //           name: 'Details',
+  //         //         },
+  //         //       },
+  //         //     ],
+  //         //   },
+  //         // },
+  //       ],
+  //     },
+  //   },
+  // });
 });
+
+Navigation.setDefaultOptions({
+  topBar: {
+    drawBehind: true,
+  },
+  bottomTabs: {
+    visible: false,
+    drawBehind: true,
+  },
+});
+
+export const detailRoot = {
+  root: {
+    stack: {
+      id: 'details',
+      children: [
+        {
+          component: {
+            name: 'Details',
+          },
+        },
+      ],
+    },
+  },
+};

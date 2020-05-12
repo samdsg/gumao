@@ -27,8 +27,13 @@ const InputHeight = percentage(SCREEN_HEIGHT, 7);
 const ListHeight = percentage(SCREEN_HEIGHT, 70);
 const backHeight = percentage(SCREEN_HEIGHT, 10);
 const Aheight = percentage(SCREEN_HEIGHT, 50);
+import {detailRoot} from '../../index';
 
-import {getTopPlayers, searchGamer} from '../store/actions/playerAction';
+import {
+  getTopPlayers,
+  searchGamer,
+  getGamer,
+} from '../store/actions/playerAction';
 
 const Player = require('../images/Player.png');
 const Clasho = require('../images/clasho.png');
@@ -73,10 +78,9 @@ class ListScreen extends React.Component {
     //   });
     // }
 
-    this.props.searchGamer({gamertag, platform}).then(() => {
-      // console.log(this.props);
-    });
+    this.props.searchGamer({gamertag, platform}).then(() => {});
   };
+
   setgamertag = gamertag => this.setState({gamertag});
   render() {
     const {gestureHandler, listOpenAnimation} = this.props;
@@ -145,9 +149,21 @@ class ListScreen extends React.Component {
               renderItem={({item, index}) => (
                 <TouchableOpacity
                   onPress={() =>
-                    Navigation.push('details', {
-                      component: {
-                        name: 'Details',
+                    // Navigation.push('DETAIL_TAB', {
+                    //   component: {
+                    //     name: 'Details',
+                    //   },
+                    // })
+                    // Navigation.mergeOptions('BOTTOM_TABS_LAYOUT', {
+                    //   bottomTabs: {
+                    //     currentTabId: 'DETAIL_TAB',
+                    //   },
+                    // })
+                    Navigation.setRoot({
+                      root: {
+                        component: {
+                          name: 'Details',
+                        },
                       },
                     })
                   }>
@@ -270,5 +286,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  {getTopPlayers, searchGamer},
+  {getTopPlayers, searchGamer, getGamer},
 )(ListScreen);
