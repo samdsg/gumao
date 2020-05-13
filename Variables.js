@@ -21,3 +21,16 @@ export const numberSize = percentage(SCREEN_HEIGHT, 16);
 export const imgWidth = percentage(SCREEN_WIDTH, 80);
 export const ImgContainerHeight = percentage(SCREEN_HEIGHT, 40);
 export const Fonts = percentage(SCREEN_WIDTH, 10);
+
+export const info = {
+  backgroundColor: '#EF544A',
+  borderRadius: 10,
+  fontSize: numberSize / 7,
+  color: '#fff',
+  fontFamily: 'Poppins-ExtraBold',
+  textAlign: 'center',
+  padding: 5,
+  marginRight: 3,
+  paddingVertical: 2,
+  paddingHorizontal: 5,
+};

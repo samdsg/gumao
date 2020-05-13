@@ -33,26 +33,16 @@ class Details extends PureComponent {
   }
 
   handleBackPress = () => {
-    //Custom logic
-    Navigation.setRoot({
-      root: {
-        component: {
-          name: 'Home',
-          options: {
-            animations: {
-              push: {
-                waitForRender: true,
-              },
-            },
-          },
-        },
+    Navigation.push('home', {
+      component: {
+        name: 'Home',
       },
     });
-    //Stop the default navigation
     return true;
   };
 
   render() {
+    const {data} = this.props.item;
     return (
       <LinearGradient
         style={{
@@ -67,7 +57,7 @@ class Details extends PureComponent {
             height: ImgContainerHeight,
           }}>
           <Animated.Image
-            source={require('../images/angryb.png')}
+            source={{uri: data.segments[1].metadata.imageUrl}}
             style={{
               height: 300,
               width: imgWidth,
@@ -90,7 +80,7 @@ class Details extends PureComponent {
           />
         </View> */}
         </View>
-        <Number />
+        <Number data={data} />
       </LinearGradient>
     );
   }

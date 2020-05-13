@@ -1,4 +1,4 @@
-import React, {} from 'react';
+import React from 'react';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import {Navigation} from 'react-native-navigation';
 import {Provider} from 'react-redux';
@@ -21,70 +21,33 @@ Navigation.registerComponentWithRedux(
 );
 
 Navigation.events().registerAppLaunchedListener(async () => {
-  Navigation.setRoot({
+  await Navigation.setRoot({
     root: {
-      component: {
-        id: 'Home',
-        name: 'Home',
+      stack: {
+        id: 'HomeStack', // This is the id we're going to use when interacting with the stack
+        children: [
+          {
+            component: {
+              id: 'details',
+              name: 'Details',
+            },
+          },
+          {
+            component: {
+              id: 'home',
+              name: 'Home',
+            },
+          },
+        ],
       },
     },
   });
-  // Navigation.setRoot({
-  //   root: {
-  //     bottomTabs: {
-  //       id: 'BOTTOM_TABS_LAYOUT',
-  //       children: [
-  //         {
-  //           stack: {
-  //             id: 'HOME_TAB',
-  //             children: [
-  //               {
-  //                 component: {
-  //                   name: 'Home',
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         },
-  //         // {
-  //         //   stack: {
-  //         //     id: 'DETAIL_TAB',
-  //         //     children: [
-  //         //       {
-  //         //         component: {
-  //         //           name: 'Details',
-  //         //         },
-  //         //       },
-  //         //     ],
-  //         //   },
-  //         // },
-  //       ],
-  //     },
-  //   },
-  // });
 });
 
 Navigation.setDefaultOptions({
-  topBar: {
-    drawBehind: true,
-  },
-  bottomTabs: {
-    visible: false,
-    drawBehind: true,
-  },
-});
-
-export const detailRoot = {
-  root: {
-    stack: {
-      id: 'details',
-      children: [
-        {
-          component: {
-            name: 'Details',
-          },
-        },
-      ],
+  animations: {
+    push: {
+      waitForRender: true,
     },
   },
-};
+});

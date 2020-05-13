@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import {connect} from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   TouchableOpacity,
   TapGestureHandler,
   TextInput,
+  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import {View, StyleSheet} from 'react-native';
-import {Toast} from 'native-base';
+import {Toast, Spinner, Text} from 'native-base';
 import {FlatGrid} from 'react-native-super-grid';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {interpolate} from 'react-native-reanimated';
@@ -67,6 +69,10 @@ class ListScreen extends React.Component {
 
   onSubmit = () => {
     const {gamertag, platform} = this.state;
+    const {
+      player: {mysearches, searching},
+    } = this.props;
+
     // if (!this.state.gamertag) {
     //   return Toast.show({
     //     text: 'Enter gamertag',
@@ -77,18 +83,34 @@ class ListScreen extends React.Component {
     //     duration: 3000,
     //   });
     // }
-
+    let same = false;
+    mysearches.forEach(({data}) => {
+      const {platformInfo} = data;
+      if (platformInfo.platformUserId === gamertag) same = true;
+    });
+    if (same) return;
     this.props.searchGamer({gamertag, platform}).then(() => {});
   };
 
+  storePlayer = async value => {
+    try {
+      await AsyncStorage.setItem('@player', value);
+    } catch (e) {
+      // saving error
+    }
+  };
+
   setgamertag = gamertag => this.setState({gamertag});
+
   render() {
-    const {gestureHandler, listOpenAnimation} = this.props;
+    const {gestureHandler, listOpenAnimation, player} = this.props;
 
     const leftX = interpolate(listOpenAnimation, {
       inputRange: [0, 1],
       outputRange: [-SCREEN_WIDTH, 0],
     });
+
+    const {mysearches, searching} = player;
 
     return (
       <Animated.View
@@ -139,104 +161,119 @@ class ListScreen extends React.Component {
             style={{
               height: ListHeight,
             }}>
-            <FlatGrid
-              itemDimension={300}
-              items={this.state.items}
-              style={styles.gridView}
-              spacing={20}
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              renderItem={({item, index}) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    // Navigation.push('DETAIL_TAB', {
-                    //   component: {
-                    //     name: 'Details',
-                    //   },
-                    // })
-                    // Navigation.mergeOptions('BOTTOM_TABS_LAYOUT', {
-                    //   bottomTabs: {
-                    //     currentTabId: 'DETAIL_TAB',
-                    //   },
-                    // })
-                    Navigation.setRoot({
-                      root: {
-                        component: {
-                          name: 'Details',
-                        },
-                      },
-                    })
-                  }>
-                  <View
-                    style={{
-                      width: '100%',
-                      height: 200,
-                      marginBottom: 10,
-                    }}>
-                    <View
-                      style={{
-                        ...StyleSheet.absoluteFill,
-                        zIndex: 3,
-                        alignItems: 'flex-start',
-                        justifyContent: 'center',
-                        width: 220,
-                        height: 200,
+            {mysearches.length < 1 ? (
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 30,
+                    color: '#fff',
+                    fontFamily: 'Poppins-Bold',
+                  }}>
+                  Enter gamertag
+                </Text>
+              </View>
+            ) : (
+              this.storePlayer(JSON.stringify(mysearches)) && (
+                <FlatGrid
+                  itemDimension={300}
+                  items={mysearches}
+                  style={styles.gridView}
+                  spacing={20}
+                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item, index}) => (
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        Navigation.push('details', {
+                          component: {
+                            name: 'Details',
+                            passProps: {
+                              item,
+                            },
+                          },
+                        });
                       }}>
-                      <Animated.Image
-                        source={item.image}
-                        resizeMode="contain"
-                        style={{
-                          width: 250,
-                          height: 230,
-                          transform: [{translateY: 10, translateX: -27}],
-                        }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
-                        ...StyleSheet.absoluteFill,
-                      }}>
-                      <LinearGradient
-                        colors={['#F9AEB2', '#F8D8C9']}
-                        start={{x: 0, y: 0}}
-                        end={{x: 1, y: 0}}
-                        style={{
-                          width: '98%',
-                          flex: 1,
-                          backgroundColor: '#fff',
-                          ...StyleSheet.absoluteFill,
-                          right: null,
-                          zIndex: 1,
-                          borderRadius: 20,
-                          paddingTop: 10,
-                          paddingRight: 30,
-                          alignItems: 'center',
-                          justifyContent: 'flex-end',
-                          flexDirection: 'row',
-                        }}>
-                        <View>
-                          <IconList name="bolt" />
-                          <IconList name="heart" />
-                          <IconList name="skull-crossbones" />
-                        </View>
-                      </LinearGradient>
                       <View
                         style={{
                           width: '100%',
-                          flex: 1,
-                          backgroundColor: '#F29758',
-                          ...StyleSheet.absoluteFill,
-                          right: null,
-                          zIndex: 0,
-                          borderRadius: 20,
-                        }}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+                          height: 200,
+                          marginBottom: 10,
+                        }}>
+                        <View
+                          style={{
+                            ...StyleSheet.absoluteFill,
+                            zIndex: 3,
+                            alignItems: 'flex-start',
+                            justifyContent: 'center',
+                            width: 220,
+                            height: 200,
+                          }}>
+                          <Animated.Image
+                            source={{
+                              uri: item.data.segments[1].metadata.imageUrl,
+                            }}
+                            resizeMode="contain"
+                            style={{
+                              width: 250,
+                              height: 200,
+                              transform: [{translateY: -5, translateX: -27}],
+                            }}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            flex: 1,
+                            ...StyleSheet.absoluteFill,
+                          }}>
+                          <LinearGradient
+                            colors={['#F9AEB2', '#F8D8C9']}
+                            start={{x: 0, y: 0}}
+                            end={{x: 1, y: 0}}
+                            style={{
+                              width: '98%',
+                              flex: 1,
+                              backgroundColor: '#fff',
+                              ...StyleSheet.absoluteFill,
+                              right: null,
+                              zIndex: 1,
+                              borderRadius: 20,
+                              paddingTop: 10,
+                              paddingRight: 30,
+                              alignItems: 'center',
+                              justifyContent: 'flex-end',
+                              flexDirection: 'row',
+                            }}>
+                            <View>
+                              <IconList
+                                name={item.data.platformInfo.platformSlug}
+                              />
+                              <IconList name="heart" />
+                              <IconList name="skull-crossbones" />
+                            </View>
+                          </LinearGradient>
+                          <View
+                            style={{
+                              width: '100%',
+                              flex: 1,
+                              backgroundColor: '#F29758',
+                              ...StyleSheet.absoluteFill,
+                              right: null,
+                              zIndex: 0,
+                              borderRadius: 20,
+                            }}
+                          />
+                        </View>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  )}
+                />
+              )
+            )}
           </View>
 
           <TapGestureHandler {...gestureHandler}>

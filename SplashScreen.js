@@ -1,9 +1,10 @@
-import React, {useRef} from 'react';
+import React, {useRef, useEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, BackHandler} from 'react-native';
 import {Container, Content, Root} from 'native-base';
 import {withSpringTransition} from 'react-native-redash';
 import {connect} from 'react-redux';
+import {Navigation} from 'react-native-navigation';
 import Animated, {
   cond,
   eq,
@@ -29,7 +30,7 @@ const SplashScreen = ({getTopPlayers}) => {
   const animeoneAnime = withSpringTransition(animeone.current, {
     ...SpringUtils.makeDefaultConfig(),
     overshootClamping: true,
-    damping: new Animated.Value(20),
+    damping: new Animated.Value(40),
   });
   useCode(() => [cond(eq(animeone.current, 0), set(animeone.current, 1))]);
 
@@ -76,6 +77,19 @@ const SplashScreen = ({getTopPlayers}) => {
     ],
     [backBtnState.current],
   );
+
+  const handleBackPress = () => {
+    alert('k')
+    return true;
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return function cleanup() {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  });
 
   return (
     <Root>

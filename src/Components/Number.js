@@ -10,10 +10,13 @@ import {
   SCREEN_WIDTH,
   SCREEN_HEIGHT,
 } from '../../Variables';
+import {codeToEmoji} from '../Helpers/misc';
+const Fonts = percentage(SCREEN_WIDTH, 50);
 
-const Number = props => {
-  const Fonts = percentage(SCREEN_WIDTH, 50);
+const Number = ({data}) => {
+  const {platformInfo, userInfo, metadata, segments} = data;
   const infoHeight = percentage(SCREEN_HEIGHT, 100);
+
   return (
     <View
       style={{
@@ -24,23 +27,14 @@ const Number = props => {
       }}>
       <View
         style={{
-          backgroundColor: '#EF544A',
-          width: 60,
+          width: 100,
           height: 40,
-          borderRadius: 10,
-          padding: 10,
-          alignItems: 'center',
-          justifyContent: 'center',
           marginTop: 7,
+          flexDirection: 'row',
+          alignItems: 'center',
         }}>
-        <Text
-          style={{
-            fontSize: numberSize / 5,
-            color: '#fff',
-            fontFamily: 'Poppins-ExtraBold',
-          }}>
-          2.8
-        </Text>
+        <Text style={{...styles.info}}>{platformInfo.platformSlug}</Text>
+        <Text style={{...styles.info}}> {userInfo.countryCode}</Text>
       </View>
       <View>
         <Text
@@ -52,7 +46,7 @@ const Number = props => {
             textTransform: 'uppercase',
             fontWeight: '700',
           }}>
-          Angry Birds
+          {metadata.activeLegend}
         </Text>
       </View>
       <View>
@@ -65,7 +59,7 @@ const Number = props => {
             textTransform: 'lowercase',
             fontWeight: '900',
           }}>
-          Bird Red
+          {platformInfo.platformUserId}
         </Text>
       </View>
       <View>
@@ -78,7 +72,7 @@ const Number = props => {
             textTransform: 'lowercase',
             fontWeight: '900',
           }}>
-          #3000
+          Stats
         </Text>
       </View>
       <Animated.ScrollView
@@ -91,132 +85,40 @@ const Number = props => {
           height: infoHeight / 3.8,
           paddingHorizontal: 20,
         }}>
-        <View
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            marginTop: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-          }}>
-          <Text
-            style={{
-              fontSize: Fonts / 20,
-            }}>
-            Season 2 Wins
-          </Text>
-          <Badge success>
-            <Text
-              style={{
-                color: 'white',
-                alignItems: 'center',
-                fontSize: Fonts / 20,
-              }}>
-              1866
+        <View style={{...styles.statCover}}>
+          <Text style={{...styles.statTitle}}>Apex Level</Text>
+          <Badge danger style={{...styles.flexBadge}}>
+            <Text style={{...styles.count}}>
+              {segments[0].stats.level.displayValue}
+            </Text>
+
+            <Text style={{...styles.percentile}}>
+              {segments[0].stats.level.percentile}%
             </Text>
           </Badge>
         </View>
-        <View
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            marginTop: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-          }}>
-          <Text
-            style={{
-              fontSize: Fonts / 20,
-            }}>
-            Apex Level
-          </Text>
-          <Badge success>
-            <Text
-              style={{
-                color: 'white',
-                alignItems: 'center',
-                fontSize: Fonts / 20,
-              }}>
-              122
+
+        <View style={{...styles.statCover}}>
+          <Text style={{...styles.statTitle}}>Season 2 Wins</Text>
+          <Badge danger style={{...styles.flexBadge}}>
+            <Text style={{...styles.count}}>
+              {segments[0].stats.season2Wins.displayValue}
+            </Text>
+
+            <Text style={{...styles.percentile}}>
+              {segments[0].stats.season2Wins.percentile}%
             </Text>
           </Badge>
         </View>
-        <View
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            marginTop: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-          }}>
-          <Text
-            style={{
-              fontSize: Fonts / 20,
-            }}>
-            Damage Done
-          </Text>
-          <Badge danger>
-            <Text
-              style={{
-                color: 'white',
-                alignItems: 'center',
-                fontSize: Fonts / 20,
-              }}>
-              1866
+
+        <View style={{...styles.statCover}}>
+          <Text style={{...styles.statTitle}}> Damage Done </Text>
+          <Badge danger style={{...styles.flexBadge}}>
+            <Text style={{...styles.count}}>
+              {segments[0].stats.damage.displayValue}
             </Text>
-          </Badge>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            marginTop: 10,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 10,
-          }}>
-          <Text
-            style={{
-              fontSize: Fonts / 20,
-            }}>
-            Season 2 Kills
-          </Text>
-          <Badge
-            style={{
-              backgroundColor: 'black',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                color: 'white',
-                alignItems: 'center',
-                fontSize: Fonts / 20,
-              }}>
-              1866
+            <Text style={{...styles.percentile}}>
+              {segments[0].stats.damage.percentile}%
             </Text>
           </Badge>
         </View>
@@ -225,6 +127,57 @@ const Number = props => {
   );
 };
 
-Number.propTypes = {};
+const styles = StyleSheet.create({
+  statCover: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  badge: {
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flexBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statTitle: {
+    fontSize: Fonts / 27,
+  },
+  percentile: {
+    color: 'white',
+    alignItems: 'center',
+    fontSize: Fonts / 30,
+    textAlign: 'center',
+  },
+  count: {
+    color: 'white',
+    alignItems: 'center',
+    fontSize: Fonts / 25,
+    marginRight: 3,
+  },
+  info: {
+    backgroundColor: '#EF544A',
+    borderRadius: 10,
+    fontSize: numberSize / 7,
+    color: '#fff',
+    fontFamily: 'Poppins-ExtraBold',
+    textAlign: 'center',
+    padding: 5,
+    marginRight: 3,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+  },
+});
 
 export default Number;
