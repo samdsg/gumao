@@ -4,6 +4,11 @@ import {Navigation} from 'react-native-navigation';
 import {Provider} from 'react-redux';
 import SplashScreen from './SplashScreen';
 import DetailsScreen from './src/Components/Details';
+console.ignoredYellowBox = [
+  'Warning: Each',
+  'Warning: Failed',
+  "Warning: Can't perform",
+];
 
 import store from './src/store';
 
@@ -49,5 +54,8 @@ Navigation.setDefaultOptions({
     push: {
       waitForRender: true,
     },
+    setRoot: {
+      waitForRender: true
+    }
   },
 });

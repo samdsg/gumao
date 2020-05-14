@@ -26,10 +26,8 @@ import {EventEmitter} from '../Helpers/events';
 
 const Fonts = percentage(SCREEN_WIDTH, 50);
 const InputHeight = percentage(SCREEN_HEIGHT, 7);
-const ListHeight = percentage(SCREEN_HEIGHT, 70);
+const ListHeight = percentage(SCREEN_HEIGHT, 90);
 const backHeight = percentage(SCREEN_HEIGHT, 10);
-const Aheight = percentage(SCREEN_HEIGHT, 50);
-import {detailRoot} from '../../index';
 
 import {
   getTopPlayers,
@@ -60,11 +58,12 @@ class ListScreen extends React.Component {
         {name: 'EMERALD', code: '#2ecc71', image: Clasho},
         {name: 'PETER RIVER', code: '#3498db', image: AngryB},
       ],
-      gamertag: 'Naghzz',
+      gamertag: '',
       platform: '',
     };
 
     EventEmitter.subscribe('platform', platform => this.setState({platform}));
+    EventEmitter.subscribe('submit', platform => this.onSubmit());
   }
 
   onSubmit = () => {
@@ -73,16 +72,16 @@ class ListScreen extends React.Component {
       player: {mysearches, searching},
     } = this.props;
 
-    // if (!this.state.gamertag) {
+    // if (platform === '' || gamertag === '')
     //   return Toast.show({
-    //     text: 'Enter gamertag',
+    //     text: 'Select all field',
     //     buttonText: 'Okay',
     //     buttonTextStyle: {color: '#fff'},
     //     buttonStyle: {backgroundColor: '#ff4500'},
     //     position: 'top',
     //     duration: 3000,
     //   });
-    // }
+
     let same = false;
     mysearches.forEach(({data}) => {
       const {platformInfo} = data;
@@ -126,6 +125,7 @@ class ListScreen extends React.Component {
             flex: 1,
             paddingHorizontal: 10,
             paddingBottom: 20,
+            position: 'relative',
           }}
           colors={['#202943', '#7C4864', '#F5718F', '#F8D8C9']}>
           <View
@@ -279,13 +279,24 @@ class ListScreen extends React.Component {
           <TapGestureHandler {...gestureHandler}>
             <Animated.View
               style={{
-                alignItems: 'center',
+                height: 100,
+                width: 200,
                 justifyContent: 'center',
-                paddingHorizontal: 10,
-                height: backHeight,
-                padding: 5,
+                paddingLeft: 30,
+                position: 'absolute',
+                bottom: 0,
+                transform: [
+                  {
+                    translateX: backHeight * 1.85,
+                  },
+                ],
               }}>
-              <Icon name="arrow-left" size={25} color="#202943" />
+              <Icon
+                name="long-arrow-alt-left"
+                style={{
+                  fontSize: Fonts / 7,
+                }}
+              />
             </Animated.View>
           </TapGestureHandler>
         </LinearGradient>

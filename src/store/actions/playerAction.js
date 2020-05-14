@@ -1,14 +1,13 @@
 import axios from 'axios';
 import {websiteUrl} from '../../Helpers/misc';
-import {EventEmitter} from '../../Helpers/events';
 import {
-  GETHIGHESTNUMBERS,
   GETERROR,
   CLEARERROR,
   SEARCHAPLAYER,
-  CLEARPLAYER,
   SEARCHING,
+  MYPLAYER,
 } from './types';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export const getTopPlayers = () => async dispatch => {};
 
@@ -32,7 +31,16 @@ export const searchGamer = ({gamertag, platform}) => async dispatch => {
     })
     .catch(err => {
       dispatch({type: SEARCHING, payload: false});
-      dispatch({type: GETERROR, payload: err.response.data});
+      dispatch({type: GETERROR, payload: 'nothing found'});
     });
 };
 export const clearError = () => dispatch => dispatch({type: CLEARERROR});
+
+export const playerData = () => async dispatch => {
+  const player = JSON.parse(await AsyncStorage.getItem('@player'));
+
+  dispatch({
+    type: MYPLAYER,
+    payload: player,
+  });
+};

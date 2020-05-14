@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Form, Picker} from 'native-base';
+import {Form, Picker, Button, Text, View} from 'native-base';
 import LinearGradient from 'react-native-linear-gradient';
 import {percentage, SCREEN_HEIGHT, SCREEN_WIDTH} from '../../Variables';
 import {EventEmitter} from '../Helpers/events';
@@ -15,24 +15,27 @@ const Selector = props => {
   };
 
   return (
-    <LinearGradient
-      colors={['#202943', '#202943']}
+    <View
       style={{
-        width: 300,
         alignSelf: 'center',
-        justifyContent: 'center',
         height: 50,
         borderRadius: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        justifyContent: 'space-between',
       }}>
-      <Form>
+      <Form
+        style={{
+          width: 150,
+          overflow: 'hidden',
+          marginRight: 20,
+        }}>
         <Picker
           mode="dropdown"
           style={{
             color: '#fff',
-            fontWeight: '300',
-            fontFamily: 'Poppins-Bold',
-            textAlign: 'center',
-            width: 300,
             alignItems: 'center',
           }}
           selectedValue={selected}
@@ -43,7 +46,21 @@ const Selector = props => {
           <Picker.Item label="ORIGIN" value="orgin" />
         </Picker>
       </Form>
-    </LinearGradient>
+
+      <Button
+        dark
+        style={{borderRadius: 5}}
+        onPress={() => EventEmitter.dispatch('submit')}>
+        <Text
+          style={{
+            fontWeight: '300',
+            fontFamily: 'Poppins-Bold',
+            fontSize: 12,
+          }}>
+          Search
+        </Text>
+      </Button>
+    </View>
   );
 };
 

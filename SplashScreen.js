@@ -22,8 +22,13 @@ import FooterIcons from './src/Components/FooterIcons';
 import ListScreen from './src/Components/ListScreen';
 
 import {getTopPlayers} from './src/store/actions/playerAction';
+console.ignoredYellowBox = [
+  'Warning: Each',
+  'Warning: Failed',
+  "Warning: Can't perform",
+];
 
-const SplashScreen = ({getTopPlayers}) => {
+const SplashScreen = ({getTopPlayers, componentId}) => {
   getTopPlayers();
   /* Image, Top */
   const animeone = useRef(new Animated.Value(0));
@@ -79,7 +84,9 @@ const SplashScreen = ({getTopPlayers}) => {
   );
 
   const handleBackPress = () => {
-    alert('k')
+    Navigation.pop('details');
+
+    BackHandler.exitApp();
     return true;
   };
 
@@ -90,7 +97,6 @@ const SplashScreen = ({getTopPlayers}) => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
     };
   });
-
   return (
     <Root>
       <Container style={{...styles.container}}>

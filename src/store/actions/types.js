@@ -5,3 +5,4 @@ export const GETERROR = 'GETERROR';
 export const CLEARERROR = 'CLEARERROR';
 export const CLEARPLAYER = 'CLEARPLAYER';
 export const SEARCHING = 'SEARCHING';
+export const MYPLAYER = 'MYPLAYER';

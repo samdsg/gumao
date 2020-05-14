@@ -6,6 +6,7 @@ import {
   CLEARERROR,
   CLEARPLAYER,
   SEARCHING,
+  MYPLAYER,
 } from '../actions/types';
 
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
   search: null,
   err: null,
   searching: false,
+  myplayer: null
 };
 
 export default (state = initialState, action) => {
@@ -49,6 +51,11 @@ export default (state = initialState, action) => {
     case CLEARPLAYER:
       return {
         ...state,
+      };
+    case MYPLAYER:
+      return {
+        ...state,
+        myplayer: action.payload,
       };
     default:
       return state;

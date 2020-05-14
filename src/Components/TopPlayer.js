@@ -1,5 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
+import {connect} from 'react-redux';
 import Animated, {
   interpolate,
   useCode,
@@ -8,21 +9,22 @@ import Animated, {
   set,
   SpringUtils,
 } from 'react-native-reanimated';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import PropTypes from 'prop-types';
-import {percentage, SCREEN_HEIGHT, numberSize, info} from '../../Variables';
 import {
-  withTimingTransition,
-  withSpring,
-  withSpringTransition,
-  delay,
-} from 'react-native-redash';
-import AsyncStorage from '@react-native-community/async-storage';
+  percentage,
+  SCREEN_HEIGHT,
+  numberSize,
+  info,
+  SCREEN_WIDTH,
+} from '../../Variables';
+import {withSpringTransition, delay} from 'react-native-redash';
 const dImg = require('../images/angryb.png');
+import {playerData} from '../store/actions/playerAction';
 
-function TopPlayer({animeoneAnime}) {
+function TopPlayer({animeoneAnime, playerData, myplayer}) {
   const topTrans = useRef(new Animated.Value(0));
   const topTrans1 = useRef(new Animated.Value(0));
+  const imgWidth = percentage(SCREEN_WIDTH, 40);
+  const imgHeight = percentage(SCREEN_HEIGHT, 55);
 
   const MiddleHeight = percentage(SCREEN_HEIGHT, 70);
   const boxesHeight = percentage(SCREEN_HEIGHT, 45);
@@ -59,18 +61,122 @@ function TopPlayer({animeoneAnime}) {
   ]);
 
   const [player, setPlayer] = useState([]);
-  const playerData = async () => {
-    const player = JSON.parse(await AsyncStorage.getItem('@player'));
-    if (player) {
-      if (player.length > 0) {
-        setPlayer(...player);
-      }
-    }
-  };
-
   useEffect(() => {
-    playerData();
-  }, []);
+    playerData().then(() => {});
+  }, [player]);
+
+  const showImage = player =>
+    player !== null ? (
+      <Animated.Image
+        style={{
+          width: 300,
+          height: 300,
+          resizeMode: 'contain',
+        }}
+        source={{uri: player[0].data.segments[1].metadata.imageUrl}}
+      />
+    ) : (
+      <Animated.Image
+        style={{
+          width: 300,
+          height: 300,
+          resizeMode: 'contain',
+        }}
+        source={dImg}
+      />
+    );
+
+  const showInfo = player => (
+    <View
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: boxesHeight,
+        backgroundColor: '#FEFEFE',
+        translateY: 120,
+        overflow: 'hidden',
+        borderRadius: 30,
+        zIndex: 3,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flex: 1,
+      }}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+        }}>
+        <View
+          style={{
+            paddingBottom: 15,
+            flex: 1,
+            paddingHorizontal: 15,
+          }}>
+          <View
+            style={{
+              width: 100,
+              height: 40,
+              marginTop: 7,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Text style={{...info}}>
+              {player !== null
+                ? player[0].data.platformInfo.platformSlug
+                : 'xbox'}
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontSize: numberSize / 5,
+              color: '#777B89',
+              fontFamily: 'Segoe UI',
+              marginTop: 7,
+              textTransform: 'uppercase',
+              fontWeight: '700',
+            }}>
+            {player !== null
+              ? player[0].data.metadata.activeLegend
+              : 'Angry Birds'}
+          </Text>
+          <Text
+            style={{
+              fontSize: numberSize / 2.8,
+              fontFamily: 'Segoe UI Bold',
+              color: '#3F455A',
+              marginTop: 7,
+              textTransform: 'lowercase',
+              fontWeight: '900',
+            }}>
+            {player !== null
+              ? player[0].data.platformInfo.platformUserId
+              : 'Bird Red'}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingBottom: 20,
+            paddingRight: 20,
+          }}>
+          <Text
+            style={{
+              fontSize: numberSize / 3,
+              fontWeight: '900',
+              color: '#F2F4F6',
+            }}>
+            #{player !== null
+              ? player[0].data.segments[0].stats.rankScore.rank
+              : '1234'}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <View
@@ -79,124 +185,32 @@ function TopPlayer({animeoneAnime}) {
         alignItems: 'center',
         overflow: 'hidden',
         paddingVertical: 5,
+        flex: 1,
       }}>
       <View
         style={{
           width: '100%',
           zIndex: 4,
+          flex: 1,
         }}>
         <Animated.View
           style={{
-            translateY: -10,
             justifyContent: 'center',
             alignItems: 'center',
             transform: [{scale: scaleLogo}],
+            position: 'absolute',
+
+            transform: [
+              {
+                translateX: imgWidth / 7,
+                translateY: imgHeight / 10,
+              },
+            ],
           }}>
-          {player.data ? (
-            <Animated.Image
-              style={{
-                width: 300,
-                height: 300,
-                resizeMode: 'contain',
-              }}
-              source={{uri: player.data.segments[1].metadata.imageUrl}}
-            />
-          ) : (
-            <Animated.Image
-              style={{
-                width: 300,
-                height: 300,
-                resizeMode: 'contain',
-              }}
-              source={dImg}
-            />
-          )}
+          {showImage(myplayer.myplayer)}
         </Animated.View>
       </View>
-      <View
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: boxesHeight,
-          backgroundColor: '#FEFEFE',
-          translateY: 120,
-          overflow: 'hidden',
-          borderRadius: 30,
-          zIndex: 3,
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-        }}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            overflow: 'hidden',
-            justifyContent: 'flex-end',
-          }}>
-          <View
-            style={{
-              paddingBottom: 15,
-            }}>
-            <View
-              style={{
-                width: 100,
-                height: 40,
-                marginTop: 7,
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <Text style={{...info}}>
-                {player.data ? player.data.platformInfo.platformSlug : 'xbox'}
-              </Text>
-            </View>
-            <Text
-              style={{
-                fontSize: numberSize / 5,
-                color: '#777B89',
-                fontFamily: 'Segoe UI',
-                marginTop: 7,
-                textTransform: 'uppercase',
-                fontWeight: '700',
-              }}>
-              {player.data ? player.data.metadata.activeLegend : 'Angry Birds'}
-            </Text>
-            <Text
-              style={{
-                fontSize: numberSize / 2.5,
-                fontFamily: 'Segoe UI Bold',
-                color: '#3F455A',
-                marginTop: 7,
-                textTransform: 'lowercase',
-                fontWeight: '900',
-              }}>
-              {player.data
-                ? player.data.platformInfo.platformUserId
-                : 'Bird Red'}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              paddingLeft: 30,
-            }}>
-            <Text style={{color: '#f2f4f6', fontSize: 30}}>#</Text>
-            <Text
-              style={{
-                fontSize: numberSize / 4,
-                fontWeight: '900',
-                color: '#F2F4F6',
-              }}>
-              {player.data
-                ? player.data.segments[0].stats.rankScore.rank
-                : '1234'}
-            </Text>
-          </View>
-        </View>
-      </View>
+      {showInfo(myplayer.myplayer)}
       <Animated.View
         style={{
           position: 'absolute',
@@ -224,5 +238,11 @@ function TopPlayer({animeoneAnime}) {
 const styles = StyleSheet.create({});
 
 TopPlayer.propTypes = {};
+const mapStatToProps = state => ({
+  myplayer: state.player,
+});
 
-export default TopPlayer;
+export default connect(
+  mapStatToProps,
+  {playerData},
+)(TopPlayer);
